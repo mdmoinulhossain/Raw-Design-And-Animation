@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark-Light Mode</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Dark mode styles */
+    body.dark {
+      background-color: #1a1a1a;
+      color: #e4e4e4;
+    }
+
+    /* Light mode styles */
+    body.light {
+      background-color: white;
+      color: #333;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+
+    p {
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .toggle-btn {
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    body.dark .toggle-btn {
+      background-color: #e4e4e4;
+      color: #1a1a1a;
+    }
+
+    body.light .toggle-btn {
+      background-color: #1a1a1a;
+      color: #e4e4e4;
+    }
+
+    .toggle-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="dark">
+  <div class="container">
+    <h1>Dark-Light Mode Toggle</h1>
+    <p>Click the button below to switch between dark and light themes. Your preference will be saved automatically.</p>
+    <button class="toggle-btn" onclick="toggleTheme()">
+      Toggle Theme
+    </button>
+  </div>
+
+  <script>
+    // Check for saved theme preference or default to 'dark'
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.body.className = currentTheme;
+
+    function toggleTheme() {
+      const body = document.body;
+      
+      // Toggle between dark and light
+      if (body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+  </script>
+</body>
+</html>
