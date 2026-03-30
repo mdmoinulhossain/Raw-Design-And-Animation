@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Selector Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .country-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+
+    .country-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .country-item:last-child {
+      border-bottom: none;
+    }
+
+    .country-item:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .country-flag {
+      width: 40px;
+      height: 30px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .country-info {
+      flex: 1;
+    }
+
+    .country-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .country-code {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    .selected-country {
+      margin-top: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      display: none;
+    }
+
+    .selected-country.show {
+      display: block;
+    }
+
+    .selected-flag {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 10px auto;
+      display: block;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .emoji {
+      font-size: 32px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌍 Select Your Country</h1>
+    
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search countries...">
+    </div>
+
+    <div class="country-list" id="countryList"></div>
+
+    <div class="selected-country" id="selectedCountry">
+      <div class="emoji" id="selectedEmoji"></div>
+      <h2 id="selectedName"></h2>
+      <img class="selected-flag" id="selectedFlag" alt="Flag">
+      <p style="font-size: 24px; font-weight: bold; margin-top: 10px;" id="selectedCode"></p>
+    </div>
+  </div>
+
+  <script>
+    const countriesData = {
+      "countries": [
+        {"name": "United States", "callingCode": "+1", "flag": "https://flagcdn.com/us.svg", "emoji": "🇺🇸"},
+        {"name": "United Kingdom", "callingCode": "+44", "flag": "https://flagcdn.com/gb.svg", "emoji": "🇬🇧"},
+        {"name": "Canada", "callingCode": "+1", "flag": "https://flagcdn.com/ca.svg", "emoji": "🇨🇦"},
+        {"name": "Australia", "callingCode": "+61", "flag": "https://flagcdn.com/au.svg", "emoji": "🇦🇺"},
+        {"name": "Germany", "callingCode": "+49", "flag": "https://flagcdn.com/de.svg", "emoji": "🇩🇪"},
+        {"name": "France", "callingCode": "+33", "flag": "https://flagcdn.com/fr.svg", "emoji": "🇫🇷"},
+        {"name": "Japan", "callingCode": "+81", "flag": "https://flagcdn.com/jp.svg", "emoji": "🇯🇵"},
+        {"name": "China", "callingCode": "+86", "flag": "https://flagcdn.com/cn.svg", "emoji": "🇨🇳"},
+        {"name": "India", "callingCode": "+91", "flag": "https://flagcdn.com/in.svg", "emoji": "🇮🇳"},
+        {"name": "Brazil", "callingCode": "+55", "flag": "https://flagcdn.com/br.svg", "emoji": "🇧🇷"},
+        {"name": "Mexico", "callingCode": "+52", "flag": "https://flagcdn.com/mx.svg", "emoji": "🇲🇽"},
+        {"name": "South Africa", "callingCode": "+27", "flag": "https://flagcdn.com/za.svg", "emoji": "🇿🇦"},
+        {"name": "Russia", "callingCode": "+7", "flag": "https://flagcdn.com/ru.svg", "emoji": "🇷🇺"},
+        {"name": "Italy", "callingCode": "+39", "flag": "https://flagcdn.com/it.svg", "emoji": "🇮🇹"},
+        {"name": "Spain", "callingCode": "+34", "flag": "https://flagcdn.com/es.svg", "emoji": "🇪🇸"},
+        {"name": "South Korea", "callingCode": "+82", "flag": "https://flagcdn.com/kr.svg", "emoji": "🇰🇷"},
+        {"name": "Argentina", "callingCode": "+54", "flag": "https://flagcdn.com/ar.svg", "emoji": "🇦🇷"},
+        {"name": "Netherlands", "callingCode": "+31", "flag": "https://flagcdn.com/nl.svg", "emoji": "🇳🇱"},
+        {"name": "Bangladesh", "callingCode": "+880", "flag": "https://flagcdn.com/bd.svg", "emoji": "🇧🇩"},
+        {"name": "Egypt", "callingCode": "+20", "flag": "https://flagcdn.com/eg.svg", "emoji": "🇪🇬"},
+        {"name": "Pakistan", "callingCode": "+92", "flag": "https://flagcdn.com/pk.svg", "emoji": "🇵🇰"},
+        {"name": "Turkey", "callingCode": "+90", "flag": "https://flagcdn.com/tr.svg", "emoji": "🇹🇷"},
+        {"name": "Indonesia", "callingCode": "+62", "flag": "https://flagcdn.com/id.svg", "emoji": "🇮🇩"},
+        {"name": "Thailand", "callingCode": "+66", "flag": "https://flagcdn.com/th.svg", "emoji": "🇹🇭"},
+        {"name": "Saudi Arabia", "callingCode": "+966", "flag": "https://flagcdn.com/sa.svg", "emoji": "🇸🇦"},
+        {"name": "Nigeria", "callingCode": "+234", "flag": "https://flagcdn.com/ng.svg", "emoji": "🇳🇬"},
+        {"name": "Malaysia", "callingCode": "+60", "flag": "https://flagcdn.com/my.svg", "emoji": "🇲🇾"},
+        {"name": "Singapore", "callingCode": "+65", "flag": "https://flagcdn.com/sg.svg", "emoji": "🇸🇬"},
+        {"name": "New Zealand", "callingCode": "+64", "flag": "https://flagcdn.com/nz.svg", "emoji": "🇳🇿"},
+        {"name": "United Arab Emirates", "callingCode": "+971", "flag": "https://flagcdn.com/ae.svg", "emoji": "🇦🇪"}
+      ]
+    };
+
+    const countryList = document.getElementById('countryList');
+    const searchInput = document.getElementById('searchInput');
+    const selectedCountry = document.getElementById('selectedCountry');
+
+    function renderCountries(countries) {
+      countryList.innerHTML = '';
+      countries.forEach(country => {
+        const item = document.createElement('div');
+        item.className = 'country-item';
+        item.innerHTML = `
+          <img src="${country.flag}" alt="${country.name}" class="country-flag">
+          <div class="country-info">
+            <div class="country-name">${country.emoji} ${country.name}</div>
+            <div class="country-code">${country.callingCode}</div>
+          </div>
+        `;
+        item.onclick = () => selectCountry(country);
+        countryList.appendChild(item);
+      });
+    }
+
+    function selectCountry(country) {
+      document.getElementById('selectedEmoji').textContent = country.emoji;
+      document.getElementById('selectedName').textContent = country.name;
+      document.getElementById('selectedFlag').src = country.flag;
+      document.getElementById('selectedCode').textContent = country.callingCode;
+      selectedCountry.classList.add('show');
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filtered = countriesData.countries.filter(country => 
+        country.name.toLowerCase().includes(searchTerm) ||
+        country.callingCode.includes(searchTerm)
+      );
+      renderCountries(filtered);
+    });
+
+    // Initial render
+    renderCountries(countriesData.countries);
+  </script>
+</body>
+</html>

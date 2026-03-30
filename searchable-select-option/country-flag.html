@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.custom-select {
+  position: relative;
+  width: 300px;
+}
+
+.select-selected {
+  background-color: white;
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-selected:after {
+  content: "▼";
+  position: absolute;
+  right: 16px;
+  font-size: 12px;
+}
+
+.select-items {
+  position: absolute;
+  background-color: white;
+  border: 2px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  z-index: 99;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+}
+
+.select-items div {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-items div:hover {
+  background-color: #f0f0f0;
+}
+
+.flag-icon {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.select-hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="custom-select">
+  <div class="select-selected">
+    <span>Select a country</span>
+  </div>
+  <div class="select-items" id="selectItems"></div>
+</div>
+
+<input type="hidden" name="country" id="countryInput">
+
+<script>
+const countries = [
+  {"name": "United States", "callingCode": "+1", "flag": "https://flagcdn.com/us.svg", "emoji": "🇺🇸"},
+  {"name": "United Kingdom", "callingCode": "+44", "flag": "https://flagcdn.com/gb.svg", "emoji": "🇬🇧"},
+  {"name": "Bangladesh", "callingCode": "+880", "flag": "https://flagcdn.com/bd.svg", "emoji": "🇧🇩"},
+  // ... add more countries
+];
+
+const selectSelected = document.querySelector('.select-selected');
+const selectItems = document.getElementById('selectItems');
+const countryInput = document.getElementById('countryInput');
+
+// Populate options
+countries.forEach(country => {
+  const div = document.createElement('div');
+  div.innerHTML = `
+    <img src="${country.flag}" class="flag-icon" alt="${country.name}">
+    <span>${country.name} (${country.callingCode})</span>
+  `;
+  div.onclick = () => {
+    selectSelected.innerHTML = `
+      <img src="${country.flag}" class="flag-icon" alt="${country.name}">
+      <span>${country.name} (${country.callingCode})</span>
+    `;
+    countryInput.value = country.name;
+    selectItems.classList.remove('show');
+  };
+  selectItems.appendChild(div);
+});
+
+// Toggle dropdown
+selectSelected.onclick = () => {
+  selectItems.classList.toggle('show');
+};
+
+// Close when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-select')) {
+    selectItems.classList.remove('show');
+  }
+});
+</script>
+
+</body>
+</html>
